@@ -556,14 +556,6 @@ qq.FileUploaderBasic.prototype = {
         } while (bytes > 99);
 
         return Math.max(bytes, 0.1).toFixed(1) + ['kB', 'MB', 'GB', 'TB', 'PB', 'EB'][i];
-    },
-    _formatProgress: function (uploadedSize, totalSize) {
-        var message = this._options.messages.formatProgress;
-        function r(name, replacement) { message = message.replace(name, replacement); }
-
-        r('{percent}', Math.round(uploadedSize / totalSize * 100));
-        r('{total_size}', this._formatSize(totalSize));
-        return this._options.messages.formatProgress;
     }
 };
 
@@ -873,6 +865,14 @@ qq.extend(qq.FileUploader.prototype, {
                 qq.remove(item);
             }
         });
+    },
+    _formatProgress: function (uploadedSize, totalSize) {
+        var message = this._options.messages.formatProgress;
+        function r(name, replacement) { message = message.replace(name, replacement); }
+
+        r('{percent}', Math.round(uploadedSize / totalSize * 100));
+        r('{total_size}', this._formatSize(totalSize));
+        return this._options.messages.formatProgress;
     }
 });
 
