@@ -301,7 +301,8 @@ qq.FileUploaderBasic = function(o){
             minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
             emptyError: "{file} is empty, please select files again without it.",
             noFilesError: "No files to upload.",
-            onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."
+            onLeave: "The files are being uploaded, if you leave now the upload will be cancelled.",
+            formatProgress: "{percent}% from {total_size}"
         },
         showMessage: function(message){
             alert(message);
@@ -555,6 +556,14 @@ qq.FileUploaderBasic.prototype = {
         } while (bytes > 99);
 
         return Math.max(bytes, 0.1).toFixed(1) + ['kB', 'MB', 'GB', 'TB', 'PB', 'EB'][i];
+    },
+    _formatProgress: function (uploadedSize, totalSize) {
+        var message = this._options.messages.formatProgress;
+        function r(name, replacement) { message = message.replace(name, replacement); }
+
+        r('{percent}', Math.round(uploadedSize / totalSize * 100));
+        r('{total_size}', this._formatSize(totalSize));
+        return this._options.messages.formatProgress;
     }
 };
 
@@ -583,7 +592,7 @@ qq.FileUploader = function(o){
         template: '<div class="qq-uploader">' +
             '<div class="qq-upload-drop-area"><span>{dragText}</span></div>' +
             '<div class="qq-upload-button">{uploadButtonText}</div>' +
-            '<ul class="qq-upload-list"></ul>' +
+            (!this._options.listElement ? '<ul class="qq-upload-list"></ul>' : '') +
             '</div>',
 
         // template for one item in file list
@@ -771,7 +780,7 @@ qq.extend(qq.FileUploader.prototype, {
 
         if (loaded != total) {
             // If still uploading, display percentage
-            text = percent + '% from ' + this._formatSize(total);
+            text = this._formatProgress(loaded, total);
         } else {
             // If complete, just display final size
             text = this._formatSize(total);
